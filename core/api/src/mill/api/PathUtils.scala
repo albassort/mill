@@ -24,6 +24,7 @@ trait PathUtils {
       //Serializes by replacing the path with the substitution
       result = result.replace(value, sub)
     }
+    
     result
   
 
