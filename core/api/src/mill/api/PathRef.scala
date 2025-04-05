@@ -47,7 +47,7 @@ case class PathRef private (
   }
 }
 
-object PathRef extends PathUtils{
+object PathRef extends PathUtils {
   implicit def shellable(p: PathRef): os.Shellable = p.path
 
   /**
@@ -172,7 +172,7 @@ object PathRef extends PathUtils{
    * Default JSON formatter for [[PathRef]].
    */
   implicit def jsonFormatter: RW[PathRef] = upickle.default.readwriter[String].bimap[PathRef](
-    //env variables serialized in the toString function
+    // env variables serialized in the toString function
     p => p.toString(),
     s => {
       val Array(prefix, valid0, hex, pathString) = s.split(":", 4)
