@@ -11,8 +11,8 @@ trait PathUtils {
   /*
    * Returns a list of paths and their variables to be substituted with.
    */
-  implicit def substitutions() : List[(String, String)] = {
-    val workspaceRootPath : String = WorkspaceRoot.workspaceRoot.toString
+  implicit def substitutions(): List[(String, String)] = {
+    val workspaceRootPath: String = WorkspaceRoot.workspaceRoot.toString
 
     var result = List((workspaceRootPath, "*$WorkplaceRoot*"))
 
@@ -30,7 +30,7 @@ trait PathUtils {
    * Substituting specific paths with variables as they are read from JSON.
    * The inverse function is PathUtils.deserializeEnvVariables.
   */
-  implicit def serializeEnvVariables(a : os.Path) : String = {
+  implicit def serializeEnvVariables(a: os.Path): String = {
     val subs = substitutions()
     var result = a.toString
     subs.foreach{ case (path,sub) => 
@@ -45,7 +45,7 @@ trait PathUtils {
    * Substituting specific strings with variables as they are read from JSON. 
    * The inverse function is PathUtils.serializeEnvVariables
   */
-  implicit def deserializeEnvVariables(a : String) : os.Path = {
+  implicit def deserializeEnvVariables(a: String): os.Path = {
     val subs = substitutions()
     var result = a
     var depth = 0

@@ -11,7 +11,7 @@ object OutPathTestSuite extends UtestIntegrationTestSuite {
   val referencePath = os.pwd/"6one"
   val modifiedPath = os.pwd/"6two"
 
-  def jsonRecurse(obj : ujson.Obj, path : String) : scala.collection.mutable.Map[String, String] = {
+  def jsonRecurse(obj: ujson.Obj, path: String): scala.collection.mutable.Map[String, String] = {
     var result = scala.collection.mutable.Map.empty[String, String]
     val map = obj.obj.toMap
     map.foreach { case (k, v) => 
@@ -39,7 +39,7 @@ object OutPathTestSuite extends UtestIntegrationTestSuite {
     return result
   }
 
-  implicit def flatDirToMap(rootPath : os.Path) : scala.collection.mutable.Map[String, String] =  {
+  implicit def flatDirToMap(rootPath: os.Path): scala.collection.mutable.Map[String, String] =  {
     var result = scala.collection.mutable.Map.empty[String, String]
     val jsonPaths = os.walk(rootPath).filter(file => file.last.endsWith(".json"))
 
@@ -95,20 +95,21 @@ object OutPathTestSuite extends UtestIntegrationTestSuite {
 
     test("Compile") - integrationTest { tester => 
       val env = scala.collection.immutable.Map("COURSIER_CACHE" -> os.pwd.toString)
+      val pwd = os.pwd.toString
       val resReference1 = tester.eval(("runBackground"), cwd = referencePath )
-      val resModified1 = tester.eval(("runBackground"), cwd = modifiedPath, env = env)
+      val resModified1 = tester.eval((s"-Duser.home=$pwd", "runBackground"), cwd = modifiedPath, env = env)
       assert(resModified1.isSuccess && resReference1.isSuccess)
 
       val resReference2 = tester.eval(("clean", "runBackground"), cwd = referencePath)
-      val resModified2 = tester.eval(("clean", "runBackground"), cwd = modifiedPath, env = env)
+      val resModified2 = tester.eval((s"-Duser.home=$pwd", "clean", "runBackground" ), cwd = modifiedPath, env = env)
       assert(resModified2.isSuccess && resReference2.isSuccess)
 
       val resReference3 = tester.eval(("jar"), cwd = referencePath)
-      val resModified3 = tester.eval(("jar"), cwd = modifiedPath, env = env)
+      val resModified3 = tester.eval((s"-Duser.home=$pwd", "jar"), cwd = modifiedPath, env = env)
       assert(resModified3.isSuccess && resReference3.isSuccess)
 
       val resReference4 = tester.eval(("assembly"), cwd = referencePath)
-      val resModified4 = tester.eval(("assembly"), cwd = modifiedPath, env = env)
+      val resModified4 = tester.eval((s"-Duser.home=$pwd", "assembly"), cwd = modifiedPath, env = env)
       assert(resModified4.isSuccess && resReference4.isSuccess)
 
       assert(os.exists(os.pwd / "https"))
