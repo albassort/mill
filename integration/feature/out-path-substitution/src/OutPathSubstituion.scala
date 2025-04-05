@@ -124,12 +124,9 @@ object OutPathTestSuite extends UtestIntegrationTestSuite {
         assert(reference.contains(k))
         assert(reference.get(k).get == v)
       }
-
       reference.foreach { case (k, v) => 
         assert(modified.contains(k))
       }
-
-      //var dm  = List[String]()     
 
     }
   }

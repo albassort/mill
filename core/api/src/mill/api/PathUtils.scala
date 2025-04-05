@@ -8,6 +8,9 @@ import mill.api.WorkspaceRoot
  * Defines a trait which handles deerialization of paths, in a way that can be used by both path refs and paths
  */
 trait PathUtils {
+  /*
+   * Returns a list of paths and their variables to be substituted with.
+   */
   implicit def substitutions() : List[(String, String)] = {
     val workspaceRootPath : String = WorkspaceRoot.workspaceRoot.toString
 
@@ -20,26 +23,38 @@ trait PathUtils {
     result = result :+ (courseierPath, "*$CourseirCache*")
 
     result
-
   }
 
+  /*
+   * Handles the JSON serialization of paths. Normalizes paths based on variables returned by PathUtils.substitutions.  
+   * Substituting specific paths with variables as they are read from JSON.
+   * The inverse function is PathUtils.deserializeEnvVariables.
+  */
   implicit def serializeEnvVariables(a : os.Path) : String = {
-    // TODO: Make parsing this a little bit more complex. The 
     val subs = substitutions()
     var result = a.toString
-    subs.foreach{ case (value,sub) => 
+    subs.foreach{ case (path,sub) => 
       //Serializes by replacing the path with the substitution
-      result = result.replace(value, sub)
+      result = result.replace(path, sub)
     }
     result
   }
 
+ /*
+   * Handles the JSON deserialization of paths. Normalizes paths based on variables returned by PathUtils.substitutions.
+   * Substituting specific strings with variables as they are read from JSON. 
+   * The inverse function is PathUtils.serializeEnvVariables
+  */
   implicit def deserializeEnvVariables(a : String) : os.Path = {
     val subs = substitutions()
     var result = a
-    subs.foreach{ case (value,sub) => 
-      if (result.startsWith(sub)){
-        result = result.replace(sub, value)
+    var depth = 0
+    subs.foreach{ case (path,sub) => 
+      val pathDepth = path.count(_ == '/')
+      //In the case that a path is in the folder of another path, it picks the path with the most depth
+      if (result.startsWith(sub) && pathDepth >= depth){
+        depth = pathDepth
+        result = a.replace(sub, path)
       }
     }
     os.Path(result)
