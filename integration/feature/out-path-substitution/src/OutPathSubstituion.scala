@@ -24,7 +24,7 @@ object OutPathTestSuite extends UtestIntegrationTestSuite {
         ) {
 
           if (stringified.contains("ref:")) {
-
+            //removes the prefix of a ref: string, which contains noise and would throw off our readings
             result += (s"$path.$k" -> stringified.substring(16))
           } else {
             result += (s"$path.$k" -> stringified)
@@ -128,7 +128,6 @@ object OutPathTestSuite extends UtestIntegrationTestSuite {
       reference.foreach { case (k, v) =>
         assert(modified.contains(k))
       }
-
     }
   }
 }
