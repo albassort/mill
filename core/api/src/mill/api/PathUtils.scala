@@ -33,15 +33,15 @@ trait PathUtils {
    */
   implicit def serializeEnvVariables(a: os.Path): String = {
     val subs = substitutions()
+    var stringified = a.toString
     var result = a.toString
     var depth = 0
     subs.foreach { case (path, sub) =>
       // Serializes by replacing the path with the substitution
-      //
       val pathDepth = path.count(_ == '/')
-      if (result.startsWith(sub) && pathDepth >= depth) {
+      if (stringified.startsWith(path) && pathDepth >= depth) {
         depth = pathDepth
-        result = a.replace(path, sub)
+        result = stringified.replace(path, sub)
       }
     }
     result
