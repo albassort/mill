@@ -73,6 +73,16 @@ public class MillProcessLauncher {
     Files.createDirectories(sandbox);
     builder.environment().put(EnvVars.MILL_WORKSPACE_ROOT, new File("").getCanonicalPath());
 
+    String jdkJavaOptions = System.getenv("JDK_JAVA_OPTIONS");
+    if (jdkJavaOptions == null) jdkJavaOptions = "";
+    String javaOpts = System.getenv("JAVA_OPTS");
+    if (javaOpts == null) javaOpts = "";
+
+    String opts = (jdkJavaOptions + " " + javaOpts).trim();
+    if (!opts.isEmpty()) {
+      builder.environment().put("JDK_JAVA_OPTIONS", opts);
+    }
+
     builder.directory(sandbox.toFile());
     return builder.start();
   }
@@ -140,7 +150,12 @@ public class MillProcessLauncher {
       if (Files.exists(millJavaHomeFile)) {
         String[] savedJavaHomeInfo = Files.readString(millJavaHomeFile).split(" ");
         if (savedJavaHomeInfo[0].equals(jvmId)) {
-          javaHome = savedJavaHomeInfo[1];
+          // Make sure we check to see if the saved java home exists before using
+          // it, since it may have been since uninstalled, or the `out/` folder
+          // may have been transferred to a different machine
+          if (Files.exists(Paths.get(savedJavaHomeInfo[1]))) {
+            javaHome = savedJavaHomeInfo[1];
+          }
         }
       }
 
