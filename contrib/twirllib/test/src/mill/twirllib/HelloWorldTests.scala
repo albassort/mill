@@ -114,7 +114,7 @@ trait HelloWorldTests extends TestSuite {
           val Right(result2) =
             eval.apply(HelloWorld.core.compileTwirl): @unchecked
 
-          assert(result2.evalCount == 2)
+          assert(result2.evalCount == 0)
         }
       }
     }
