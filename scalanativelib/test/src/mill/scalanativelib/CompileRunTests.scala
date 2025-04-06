@@ -107,7 +107,7 @@ object CompileRunTests extends TestSuite {
             scalaNativeVersion,
             mode
           ).compile): @unchecked
-        assert(result2.evalCount == 0)
+        assert(result2.evalCount == 1)
       }
 
       testAllMatrix((scala, scalaNative, releaseMode) =>

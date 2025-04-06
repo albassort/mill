@@ -177,7 +177,7 @@ object PathRef extends PathUtils {
     s => {
       val Array(prefix, valid0, hex, pathString) = s.split(":", 4)
 
-      val path = deserializeEnvVariables(os.Path(pathString))
+      val path = deserializeEnvVariables(pathString)
       val quick = prefix match {
         case "qref" => true
         case "ref" => false

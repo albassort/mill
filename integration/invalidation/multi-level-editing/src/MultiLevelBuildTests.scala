@@ -74,6 +74,11 @@ trait MultiLevelBuildTests extends UtestIntegrationTestSuite {
         .sorted
 
       val expectedWatched = expectedWatched0.sorted
+      println("==")
+      println(frame.evalWatched.map(_.path))
+      println(expectedWatched)
+      println(tester.workspacePath)
+      println("==")
       assert(frameWatched == expectedWatched)
     }
   }
