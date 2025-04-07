@@ -16,17 +16,13 @@ trait PathUtils {
     val outFolderName = OutFiles.out
     val root = WorkspaceRoot.workspaceRoot / outFolderName
     var currentPath = root
-    var faliure = false
-    var i = 0
-    while (100 > i) {
+    while (true) {
       if (os.exists(currentPath / "mill-java-home")) {
         return currentPath
       } else {
-        println(currentPath.toString)
-        if (currentPath.toString == "/") {
+        if (currentPath.segments.length == 1) {
           return root
         } else {
-          i = i + 1
           currentPath = currentPath / ".."
         }
       }
@@ -36,15 +32,17 @@ trait PathUtils {
   /*
    * Returns a list of paths and their variables to be substituted with.
    */
-  implicit def substitutions(): List[(String, String)] = {
+  implicit def substitutions(): List[(os.Path, String)] = {
+    val out = findOutRoot()
 
-    val outRoot = findOutRoot().toString
-    var result = List((outRoot, "*$WorkplaceRoot*"))
+    val outRoot = WorkspaceRoot.workspaceRoot 
+    var result = List((out, "*$WorkplaceRoot*"))
 
-    val javaHome = System.getProperty("java.home");
+    val javaHome = os.Path(System.getProperty("java.home"))
     result = result :+ (javaHome, "*$JavaHome*")
 
-    val courseierPath = coursier.paths.CoursierPaths.cacheDirectory().toString
+    val courseierPath = os.Path(coursier.paths.CoursierPaths.cacheDirectory().getAbsolutePath())
+
     result = result :+ (courseierPath, "*$CourseirCache*")
     result
   }
@@ -61,10 +59,12 @@ trait PathUtils {
     var depth = 0
     subs.foreach { case (path, sub) =>
       // Serializes by replacing the path with the substitution
-      val pathDepth = path.count(_ == '/')
-      if (stringified.startsWith(path) && pathDepth >= depth) {
+      //
+      val pathDepth =  path.segments.length
+      val pathString = path.toString
+      if (stringified.startsWith(pathString) && pathDepth >= depth) {
         depth = pathDepth
-        result = stringified.replace(path, sub)
+        result = stringified.replace(pathString, sub)
       }
     }
     // println(s"1!! $stringified -> $result")
@@ -78,19 +78,15 @@ trait PathUtils {
    */
   implicit def deserializeEnvVariables(a: String): os.Path = {
     val subs = substitutions()
-    var result = new String(a)
-    var depth = 0
+    var result = a
     subs.foreach { case (path, sub) =>
-      val pathDepth = path.count(_ == '/')
+      val pathString = path.toString
       // In the case that a path is in the folder of another path, it picks the path with the most depth
-      if (result.startsWith(sub) && pathDepth >= depth) {
-        depth = pathDepth
-        val clone = new String(a)
-        result = clone.replace(sub, path)
+      if (a.startsWith(sub)) {
+        result = a.replace(sub,  pathString)
+        return os.Path(result)
       }
     }
-
-    // println(s"2!! $a -> $result")
     os.Path(result)
   }
 }
