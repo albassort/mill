@@ -95,6 +95,7 @@ object TestRunnerTestUtils {
   class TestOnlyTester(m: TestRunnerTestModule => TestModule) {
     def testOnly0(f: (UnitTester, TestRunnerTestModule) => Unit) = {
       for (mod <- Seq(testrunner, testrunnerGrouping, testrunnerWorkStealing)) {
+        println(mod.toString)
         UnitTester(mod, resourcePath).scoped { eval => f(eval, mod) }
       }
     }
@@ -110,6 +111,7 @@ object TestRunnerTestUtils {
           val dest = eval.outPath / m(mod).toString / "testOnly.dest"
           val sortedListed = os.list(dest).map(_.last).sorted
           val sortedExpected = expectedFileListing(m(mod)).toSeq.sorted
+          println("HERE!")
           assert(sortedListed == sortedExpected)
         }
         // Regardless of whether tests are grouped or not, the same
