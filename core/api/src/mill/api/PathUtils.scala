@@ -35,7 +35,7 @@ trait PathUtils {
   implicit def substitutions(): List[(os.Path, String)] = {
     val out = findOutRoot()
 
-    val outRoot = WorkspaceRoot.workspaceRoot 
+    val outRoot = WorkspaceRoot.workspaceRoot
     var result = List((out, "*$WorkplaceRoot*"))
 
     val javaHome = os.Path(System.getProperty("java.home"))
@@ -60,7 +60,7 @@ trait PathUtils {
     subs.foreach { case (path, sub) =>
       // Serializes by replacing the path with the substitution
       //
-      val pathDepth =  path.segments.length
+      val pathDepth = path.segments.length
       val pathString = path.toString
       if (stringified.startsWith(pathString) && pathDepth >= depth) {
         depth = pathDepth
@@ -83,7 +83,7 @@ trait PathUtils {
       val pathString = path.toString
       // In the case that a path is in the folder of another path, it picks the path with the most depth
       if (a.startsWith(sub)) {
-        result = a.replace(sub,  pathString)
+        result = a.replace(sub, pathString)
         return os.Path(result)
       }
     }
