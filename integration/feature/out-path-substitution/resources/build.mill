@@ -1,8 +1,6 @@
 package build
-// This plugin brings a incompatible transitive version of Mill
-// See https://github.com/com-lihaoyi/mill/issues/3207
 import mill._
 import mill.scalalib._
 object `package` extends RootModule with ScalaModule {
-  def scalaVersion = "3.4.2"
+  def scalaVersion = scala.util.Properties.versionNumberString
 }

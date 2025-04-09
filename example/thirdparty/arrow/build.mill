@@ -157,8 +157,14 @@ object `package` extends RootModule {
           else Task { CompilationResult(Task.dest, PathRef(Task.dest)) }
 
         override def testForked(args: String*): Command[(String, Seq[TestResult])] =
-          if (modulesWithTestingEnabled(multiplatformRoot)) super.testForked(args: _*)
-          else Task.Command { ("", Seq.empty[TestResult]) }
+          if (modulesWithTestingEnabled(multiplatformRoot)) {
+            println(args)
+            super.testForked(args: _*)
+          }
+          else Task.Command { 
+            println("2")
+            ("", Seq.empty[TestResult])
+          }
 
         override def sources: T[Seq[PathRef]] = Task.Sources(
           Seq("common", outer.platformCrossSuffix)

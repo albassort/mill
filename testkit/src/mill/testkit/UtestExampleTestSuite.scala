@@ -13,7 +13,6 @@ object UtestExampleTestSuite extends TestSuite {
 
   val millExecutable: os.Path = os.Path(System.getenv("MILL_INTEGRATION_LAUNCHER"), os.pwd)
   val tests: Tests = Tests {
-
     test("exampleTest") {
       def run() =
         Retry(
