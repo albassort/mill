@@ -36,7 +36,7 @@ trait PathUtils {
   implicit def substitutions(): List[(os.Path, String)] = {
     val out = findOutRoot()
 
-    var result = List((os.Path("/hom"), "*$WorkplaceRoot*"))
+    var result = List((out, "*$WorkplaceRoot*"))
 
     val javaHome = os.Path(System.getProperty("java.home"))
     result = result :+ (javaHome, "*$JavaHome*")
